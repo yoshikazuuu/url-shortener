@@ -1,9 +1,6 @@
 # Use golang image as base
 FROM golang:1.22-alpine
 
-# Install git
-RUN apk add --no-cache git
-
 # Set the working directory
 WORKDIR /app
 
