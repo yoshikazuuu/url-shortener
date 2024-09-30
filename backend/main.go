@@ -20,6 +20,8 @@ func main() {
 	// CORS middleware with whitelist
 	app.Use(cors.New(cors.Config{
 		AllowOrigins: os.Getenv("FRONTEND_URL"),
+		AllowMethods: "GET,POST,OPTIONS",     // Ensure OPTIONS method is allowed for preflight
+		AllowHeaders: "Content-Type, Accept", // Add necessary headers
 	}))
 
 	// Routes
