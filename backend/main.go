@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -16,12 +17,19 @@ func main() {
 		BodyLimit: 10 * 1024 * 1024, // 10MB
 	})
 
-	// CORS middleware
-	app.Use(cors.New())
+	// CORS middleware with whitelist
+	app.Use(cors.New(cors.Config{
+		AllowOrigins: os.Getenv("FRONTEND_URL"),
+	}))
 
 	// Routes
 	app.Post("/api/shorten", handler.ShortenURL)
 	app.Get("/:id", handler.RedirectToURL)
+
+	// Redirect root path to https://url.jer.ee
+	app.Get("/", func(c *fiber.Ctx) error {
+		return c.Redirect(os.Getenv("FRONTEND_URL"), 301)
+	})
 
 	log.Fatal(app.Listen(":8080"))
 }

@@ -14,13 +14,9 @@ RUN go mod download
 COPY . .
 
 # Build the Go application
-RUN CGO_ENABLED=0 GOOS=linux go build -o backend
+RUN CGO_ENABLED=0 go build -ldflags "-s -w" -trimpath -o backend
 
-# Optional:
-# To bind to a TCP port, runtime parameters must be supplied to the docker command.
-# But we can document in the Dockerfile what ports
-# the application is going to listen on by default.
-# https://docs.docker.com/reference/dockerfile/#expose
+# Expose port 8080
 EXPOSE 8080
 
 # Command to be executed when the container starts
