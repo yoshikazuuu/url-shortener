@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { CopyIcon, LinkIcon, AlertCircle } from "lucide-react";
 import axios from "axios";
-import { SnowyBackground } from "./snowy-background";
+import Starry from "./starry";
 
 export function ModernLinkShortener() {
   const [url, setUrl] = useState("");
@@ -36,11 +36,19 @@ export function ModernLinkShortener() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4 relative overflow-hidden font-sans">
+      <Starry
+        minSize={0.5}
+        maxSize={2}
+        opacity={0.25}
+        particleDensity={40}
+        className="fixed h-full w-full"
+      />
+
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-md bg-gray-800/50 p-8 rounded-lg shadow-lg backdrop-blur-xl border border-gray-700 relative z-10"
+        className="w-full max-w-md bg-secondary/30 p-8 rounded-lg shadow-lg backdrop-blur-sm border border-secondary relative z-10"
       >
         <h1 className="text-3xl font-bold mb-6 text-center bg-clip-text text-transparent bg-gradient-to-b from-white to-muted-foreground">
           Link Shortener
@@ -52,7 +60,7 @@ export function ModernLinkShortener() {
               placeholder="Enter your long URL"
               value={url}
               onChange={(e) => setUrl(e.target.value)}
-              className="focus-within:ring-2 focus-visible:ring-2 focus-visible:ring-blue-500 focus-within:ring-blue-500 focus-within:border-transparent w-full bg-gray-700/50 border-gray-600 text-gray-100 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-10"
+              className="focus-within:ring-2 focus-visible:ring-2 focus-visible:ring-primary focus-within:ring-primary focus-within:border-transparent w-full bg-gray-700/50 border-gray-600 text-gray-100 placeholder-gray-400 focus:ring-2 focus:ring-primary focus:border-transparent pr-10"
               required
             />
             <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
@@ -60,13 +68,13 @@ export function ModernLinkShortener() {
             </div>
           </div>
           <div className="relative">
-            <div className="flex items-center bg-gray-700/50 border border-gray-600 rounded-md overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent">
+            <div className="flex items-center bg-gray-700/50 border border-gray-600 rounded-md overflow-hidden focus-within:ring-2 focus-within:ring-primary focus-within:border-transparent">
               <span className="pl-3 text-gray-400 h-full flex items-center">
                 jer.ee/
               </span>
               <Input
                 type="text"
-                placeholder="custom-code"
+                placeholder="custom-code (optional)"
                 value={customShortCode}
                 onChange={(e) => setCustomShortCode(e.target.value)}
                 className="flex-grow bg-transparent focus-visible:ring-0 focus:outline-none border-none focus:ring-0 text-gray-100 placeholder-gray-400 p-2 outline-none"
@@ -75,7 +83,7 @@ export function ModernLinkShortener() {
           </div>
           <Button
             type="submit"
-            className="w-full bg-blue-500 text-white hover:bg-blue-600 focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-gray-800 transition-colors duration-200"
+            className="w-full bg-primary text-white hover:bg-primary focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-gray-800 transition-colors duration-200"
           >
             Shorten URL
           </Button>
@@ -110,7 +118,7 @@ export function ModernLinkShortener() {
                   onClick={handleCopy}
                   size="sm"
                   variant="ghost"
-                  className="text-gray-300 hover:text-white focus:ring-2 focus:ring-blue-400 shrink-0 transition-colors duration-200"
+                  className="text-gray-300 hover:text-white focus:ring-2 focus:ring-primary shrink-0 transition-colors duration-200"
                 >
                   <CopyIcon className="w-4 h-4" />
                 </Button>
