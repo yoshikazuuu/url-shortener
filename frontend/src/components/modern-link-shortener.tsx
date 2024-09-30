@@ -7,11 +7,13 @@ import { Input } from "@/components/ui/input";
 import { CopyIcon, LinkIcon, AlertCircle } from "lucide-react";
 import axios from "axios";
 import Starry from "./starry";
+import Link from "next/link";
+import { toast } from "sonner";
 
 export function ModernLinkShortener() {
   const [url, setUrl] = useState("");
   const [shortUrl, setShortUrl] = useState("");
-  const [customShortCode, setCustomShortCode] = useState("");
+  const [customId, setcustomId] = useState("");
   const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -20,18 +22,30 @@ export function ModernLinkShortener() {
     setShortUrl("");
 
     try {
-      const response = await axios.post("http://127.0.0.1:8080/shorten", {
-        url,
-      });
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/shorten`,
+        {
+          url,
+          customId,
+        }
+      );
       setShortUrl(response.data.shortURL);
+      toast.success("URL shortened successfully");
     } catch (err) {
-      console.error(err);
-      setError("Failed to shorten URL. Please try again.");
+      if (axios.isAxiosError(err) && err.response?.status === 409) {
+        setError(err.response.data.error || "Custom ID already exists");
+        toast.error(err.response.data.error || "Custom ID already exists");
+      } else {
+        console.error(err);
+        setError("Failed to shorten URL. Please try again.");
+        toast.error("Failed to shorten URL. Please try again.");
+      }
     }
   };
 
   const handleCopy = () => {
     navigator.clipboard.writeText(shortUrl);
+    toast.success("Copied to clipboard");
   };
 
   return (
@@ -45,7 +59,7 @@ export function ModernLinkShortener() {
       />
 
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
         className="w-full max-w-md bg-secondary/30 p-8 rounded-lg shadow-lg backdrop-blur-sm border border-secondary relative z-10"
@@ -75,8 +89,8 @@ export function ModernLinkShortener() {
               <Input
                 type="text"
                 placeholder="custom-code (optional)"
-                value={customShortCode}
-                onChange={(e) => setCustomShortCode(e.target.value)}
+                value={customId}
+                onChange={(e) => setcustomId(e.target.value)}
                 className="flex-grow bg-transparent focus-visible:ring-0 focus:outline-none border-none focus:ring-0 text-gray-100 placeholder-gray-400 p-2 outline-none"
               />
             </div>
@@ -91,9 +105,10 @@ export function ModernLinkShortener() {
         <AnimatePresence>
           {error && (
             <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
+              key="error"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
               className="mt-4 p-2 bg-red-500/20 border border-red-500 rounded text-red-200 flex items-center"
             >
@@ -105,15 +120,22 @@ export function ModernLinkShortener() {
         <AnimatePresence>
           {shortUrl && (
             <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 10 }}
+              key="shortUrl"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
               className="mt-6 p-4 bg-gray-700/50 rounded border border-gray-600"
             >
               <p className="text-sm mb-2 text-gray-300">Your shortened URL:</p>
               <div className="flex items-center justify-between bg-gray-600/50 p-2 rounded">
-                <span className="text-blue-300 truncate mr-2">{shortUrl}</span>
+                <Link
+                  href={shortUrl}
+                  target="_blank"
+                  className="text-blue-300 truncate mr-2"
+                >
+                  {shortUrl}
+                </Link>
                 <Button
                   onClick={handleCopy}
                   size="sm"
