@@ -1,6 +1,6 @@
 services:
   backend:
-    image: yoshikazuuu/url-shortener-backend:latest
+    build: ./backend
     ports:
       - "8080:8080"
     env_file:
@@ -9,11 +9,9 @@ services:
       - redis
 
   frontend:
-    image: yoshikazuuu/url-shortener-frontend:latest
+    build: ./frontend
     ports:
       - "3000:3000"
-    env_file:
-      - frontend/.env  # Load the frontend environment variables
     depends_on:
       - backend
 

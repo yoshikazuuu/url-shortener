@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/gofiber/fiber/v2"
@@ -42,7 +41,7 @@ func ShortenURL(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to save URL"})
 	}
 
-	shortURL := fmt.Sprintf("%s/%s", os.Getenv("HOST_URL"), id)
+	shortURL := os.Getenv("SERVER_URL") + "/" + id
 	logger.LogMessage("INFO", "Shortened URL created: "+shortURL)
 	return c.JSON(fiber.Map{"shortURL": shortURL})
 }
