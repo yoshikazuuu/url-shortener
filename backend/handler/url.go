@@ -1,6 +1,9 @@
 package handler
 
 import (
+	"fmt"
+	"os"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/teris-io/shortid"
 	"github.com/yoshikazuuu/url-shortener/logger"
@@ -39,7 +42,7 @@ func ShortenURL(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to save URL"})
 	}
 
-	shortURL := "http://localhost:8080/" + id
+	shortURL := fmt.Sprintf("%s/%s", os.Getenv("HOST_URL"), id)
 	logger.LogMessage("INFO", "Shortened URL created: "+shortURL)
 	return c.JSON(fiber.Map{"shortURL": shortURL})
 }

@@ -4,7 +4,8 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - REDIS_ADDR=redis:6379
+      - REDIS_ADDR=${REDIS_ADDR}
+      - HOST_URL=${HOST_URL}
     depends_on:
       - redis
 
@@ -13,7 +14,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:8080
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
     depends_on:
       - backend
 
