@@ -1,6 +1,6 @@
 services:
   backend:
-    build: ./backend
+    image: yoshikazuuu/url-shortener-backend:latest
     ports:
       - "8080:8080"
     environment:
@@ -10,7 +10,7 @@ services:
       - redis
 
   frontend:
-    build: ./frontend
+    image: yoshikazuuu/url-shortener-frontend:latest
     ports:
       - "3000:3000"
     environment:
