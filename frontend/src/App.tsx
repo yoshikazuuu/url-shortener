@@ -3,45 +3,16 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { CopyIcon, LinkIcon, AlertCircle } from "lucide-react";
-import axios from "axios";
+import { CopyIcon, AlertCircle } from "lucide-react";
 import { toast, Toaster } from "sonner";
 import Starry from "@/components/starry";
 import { ThemeProvider } from "./components/theme-provider";
+import { URLShortenerForm } from "./components/form";
+import { QRCodeCanvas } from "qrcode.react";
 
 export default function App() {
-  const [url, setUrl] = useState("");
   const [shortUrl, setShortUrl] = useState("");
-  const [customId, setcustomId] = useState("");
   const [error, setError] = useState("");
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    setShortUrl("");
-
-    try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/shorten`,
-        {
-          url,
-          customId,
-        }
-      );
-      setShortUrl(response.data.shortURL);
-      toast.success("URL shortened successfully");
-    } catch (err) {
-      if (axios.isAxiosError(err) && err.response?.status === 409) {
-        setError(err.response.data.error || "Custom ID already exists");
-        toast.error(err.response.data.error || "Custom ID already exists");
-      } else {
-        console.error(err);
-        setError("Failed to shorten URL. Please try again.");
-        toast.error("Failed to shorten URL. Please try again.");
-      }
-    }
-  };
 
   const handleCopy = () => {
     navigator.clipboard.writeText(shortUrl);
@@ -69,38 +40,10 @@ export default function App() {
           <h1 className="text-3xl font-bold mb-6 text-center bg-clip-text text-transparent bg-gradient-to-b from-white to-muted-foreground">
             Link Shortener
           </h1>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="relative">
-              <Input
-                type="url"
-                placeholder="Enter your long URL"
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
-                className="focus-within:ring-2 focus-visible:ring-2 focus-visible:ring-primary focus-within:ring-primary focus-within:border-transparent w-full bg-gray-700/50 border-gray-600 text-gray-100 placeholder-gray-400 focus:ring-2 focus:ring-primary focus:border-transparent pr-10"
-                required
-              />
-              <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                <LinkIcon className="w-5 h-5 text-gray-400" />
-              </div>
-            </div>
-            <div className="relative">
-              <div className="flex items-center bg-gray-700/50 border border-gray-600 rounded-md overflow-hidden focus-within:ring-2 focus-within:ring-primary focus-within:border-transparent">
-                <span className="pl-3 text-gray-400 h-full flex items-center">
-                  jer.ee/
-                </span>
-                <Input
-                  type="text"
-                  placeholder="custom-code (optional)"
-                  value={customId}
-                  onChange={(e) => setcustomId(e.target.value)}
-                  className="flex-grow bg-transparent focus-visible:ring-0 focus:outline-none border-none focus:ring-0 text-gray-100 placeholder-gray-400 p-2 outline-none"
-                />
-              </div>
-            </div>
-            <Button type="submit" className="w-full">
-              Shorten URL
-            </Button>
-          </form>
+          <URLShortenerForm
+            setErrorMessage={setError}
+            setShortUrl={setShortUrl}
+          />
           <AnimatePresence>
             {error && (
               <motion.div
@@ -145,6 +88,17 @@ export default function App() {
                   >
                     <CopyIcon className="w-4 h-4" />
                   </Button>
+                </div>
+                <div className="mt-4 flex justify-center">
+                  <QRCodeCanvas
+                    value={shortUrl}
+                    size={200}
+                    bgColor={"#ffffff"}
+                    fgColor={"#000000"}
+                    level={"L"}
+                    className="rounded"
+                    marginSize={2}
+                  />
                 </div>
               </motion.div>
             )}
