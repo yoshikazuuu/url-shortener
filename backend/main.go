@@ -24,6 +24,11 @@ func main() {
 		AllowHeaders: "Content-Type, Accept", // Add necessary headers
 	}))
 
+	// Health check
+	app.Get("/health", func(c *fiber.Ctx) error {
+		return c.SendStatus(fiber.StatusOK)
+	})
+
 	// Routes
 	app.Post("/api/shorten", handler.ShortenURL)
 	app.Get("/:id", handler.RedirectToURL)
