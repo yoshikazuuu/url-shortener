@@ -1,14 +1,27 @@
 "use client";
 
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { CopyIcon, AlertCircle } from "lucide-react";
 import { toast, Toaster } from "sonner";
-import Starry from "@/components/starry";
 import { ThemeProvider } from "./components/theme-provider";
-import { URLShortenerForm } from "./components/form";
-import { QRCodeCanvas } from "qrcode.react";
+
+const Starry = lazy(() =>
+  import("@/components/starry").then((module) => ({
+    default: module.default,
+  }))
+);
+const URLShortenerForm = lazy(() =>
+  import("./components/form").then((module) => ({
+    default: module.URLShortenerForm,
+  }))
+);
+const QRCodeCanvas = lazy(() =>
+  import("qrcode.react").then((module) => ({
+    default: module.QRCodeCanvas,
+  }))
+);
 
 export default function App() {
   const [shortUrl, setShortUrl] = useState("");
@@ -90,15 +103,17 @@ export default function App() {
                   </Button>
                 </div>
                 <div className="mt-4 flex justify-center">
-                  <QRCodeCanvas
-                    value={shortUrl}
-                    size={200}
-                    bgColor={"#ffffff"}
-                    fgColor={"#000000"}
-                    level={"L"}
-                    className="rounded"
-                    marginSize={2}
-                  />
+                  <Suspense fallback={<div>Loading QR Code...</div>}>
+                    <QRCodeCanvas
+                      value={shortUrl}
+                      size={200}
+                      bgColor={"#ffffff"}
+                      fgColor={"#000000"}
+                      level={"L"}
+                      className="rounded"
+                      marginSize={2}
+                    />
+                  </Suspense>
                 </div>
               </motion.div>
             )}

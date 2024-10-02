@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { LinkIcon } from "lucide-react";
-import axios from "axios";
 import { toast } from "sonner";
 
 const formSchema = z.object({
@@ -51,22 +50,32 @@ export function URLShortenerForm({
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/shorten`,
-        values
-      );
-      setShortUrl(response.data.shortURL);
-      setErrorMessage("");
-      toast.success("URL shortened successfully");
-    } catch (err) {
-      if (axios.isAxiosError(err) && err.response?.status === 409) {
-        setErrorMessage(err.response.data.error || "Custom ID already exists");
-        toast.error(err.response.data.error || "Custom ID already exists");
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/shorten`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values),
+      });
+
+      if (!response.ok) {
+        if (response.status === 409) {
+          const errorData = await response.json();
+          setErrorMessage(errorData.error || "Custom ID already exists");
+          toast.error(errorData.error || "Custom ID already exists");
+        } else {
+          throw new Error("Failed to shorten URL");
+        }
       } else {
-        console.error(err);
-        setErrorMessage("Failed to shorten URL. Please try again.");
-        toast.error("Failed to shorten URL. Please try again.");
+        const data = await response.json();
+        setShortUrl(data.shortURL);
+        setErrorMessage("");
+        toast.success("URL shortened successfully");
       }
+    } catch (err) {
+      console.error(err);
+      setErrorMessage("Failed to shorten URL. Please try again.");
+      toast.error("Failed to shorten URL. Please try again.");
     }
   }
 
