@@ -38,5 +38,10 @@ func main() {
 		return c.Redirect(os.Getenv("FRONTEND_URL"), 301)
 	})
 
+	// Test endpoint
+	app.Get("/health", func(c *fiber.Ctx) error {
+		return c.SendStatus(fiber.StatusOK)
+	})
+
 	log.Fatal(app.Listen(":8080"))
 }
