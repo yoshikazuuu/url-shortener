@@ -3,13 +3,19 @@ services:
     build: ./backend
     ports:
       - "8080:8080"
-    env_file:
-      - backend/.env  # Load the backend environment variables
+    environment:
+      - REDIS_ADDR
+      - SERVER_URL
+      - FRONTEND_URL
+
     depends_on:
       - redis
 
   frontend:
-    build: ./frontend
+    build: 
+      context: ./frontend
+      args:
+        - VITE_API_URL
     ports:
       - "3000:3000"
     depends_on:
@@ -18,4 +24,4 @@ services:
   redis:
     image: "redis:alpine"
     ports:
-      - "6379:6379"
+      - ":6379"
