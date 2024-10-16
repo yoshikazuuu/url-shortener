@@ -15,7 +15,9 @@ var (
 
 func InitRedis() {
 	RedisClient = redis.NewClient(&redis.Options{
-		Addr: os.Getenv("REDIS_ADDR"),
+		Addr:     os.Getenv("REDIS_ADDR"),     // Host and port only
+		Password: os.Getenv("REDIS_PASSWORD"), // Add this if your Redis instance uses a password
+		DB:       0,                           // Optional, DB 0 is the default
 	})
 
 	if err := RedisClient.Ping(Ctx).Err(); err != nil {
